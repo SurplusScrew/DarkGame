@@ -11,7 +11,8 @@ public enum InputAxis
 }
 public interface IInputManager
 {
-    Vector2 GetInputVector();
-    bool GetButtonState(Action action);
+    Vector2 GetMoveVector();
+    Vector2 GetLookVector();
+    bool ButtonIsPressed(Action action);
 
 }

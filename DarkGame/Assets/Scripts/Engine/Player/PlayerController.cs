@@ -2,51 +2,55 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Collider))]
 public class PlayerController : MonoBehaviour {
-    public float JumpStrength { get; internal set; }
+
+    public float JumpStrength
+	{
+		get
+		{
+			return jumpStrength;
+		}
+		set
+		{
+			jumpStrength = value;
+		}
+
+	}
+	[SerializeField]
+	private float jumpStrength = 5;
     public IInputManager inputManager { get; internal set; }
 	public IMovementController movementController{ get; internal set; }
 
-	[SerializeField]
-	private Collider collider;
+	private ICameraController cameraController;
+
+	public GameObject Player, Camera;
+
     void Awake()
 	{
-
+		inputManager = GetComponent<IInputManager>();
 		if(inputManager == null) inputManager = gameObject.AddComponent<InControlInputManager>();
+
+		movementController = GetComponent<IMovementController>();
 		if(movementController == null) movementController = gameObject.AddComponent<PlayerMovementController>();
-		collider = GetComponent<Collider>();
+		movementController.Player = Player;
 
+
+		cameraController = GetComponentInChildren<PlayerCameraController>();
+		cameraController.Camera = Camera;
+		cameraController.ChaseTarget(Player);
 	}
-	// Use this for initialization
-	void Start ()
-	{
 
+	void Update()
+	{
+		cameraController.Rotate(inputManager.GetLookVector());
+		movementController.Move(inputManager.GetMoveVector(), cameraController.GetForwardVector());
 	}
 
 	// Update is called once per frame
-	void Update ()
+	void LateUpdate ()
 	{
-		movementController.Move(inputManager.GetInputVector());
-		if(inputManager.GetButtonState(Action.Jump)) Jump();
-	}
-
-	public bool IsOnSurface()
-	{
-		Debug.DrawRay(GetBottomOfPlayerObject(), transform.TransformDirection(Vector3.down), Color.red, 0.025f);
-		return Physics.Raycast(GetBottomOfPlayerObject(), transform.TransformDirection(Vector3.down), 0.025f);
-	}
-
-	private Vector3 GetBottomOfPlayerObject()
-	{
-		return transform.position - new Vector3(0, collider.bounds.extents.y, 0);
-	}
-
-    public void Jump()
-	{
-		if(IsOnSurface())
+		if(inputManager.ButtonIsPressed(Action.Jump))
 		{
-			Debug.Log("Jumping.");
 			movementController.Jump(JumpStrength);
 		}
 	}

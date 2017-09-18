@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
 public class PlayerMovementController : MonoBehaviour, IMovementController
 {
 	[SerializeField]
@@ -9,28 +8,65 @@ public class PlayerMovementController : MonoBehaviour, IMovementController
 
 
 	[SerializeField]
-	public float MaxSpeed = 5f;
+	public float MaxSpeed = 7f;
 
-	Rigidbody rigidbody;
+	private IRigidbodyPhysicsManager physicsManager;
+	private Rigidbody rigidbody;
 
-	private void Awake()
+    public GameObject Player
+    {
+        get; set;
+    }
+
+    private void Start()
 	{
-		rigidbody = GetComponent<Rigidbody>();
+		physicsManager = Player.AddComponent<PlayerPhysicsManager>();
+		rigidbody = Player.GetComponent<Rigidbody>();
 	}
     public void Jump(float jumpStrength)
     {
-		rigidbody.AddRelativeForce(new Vector3(0,jumpStrength, 0));
+		physicsManager.Jump(jumpStrength);
+
     }
 
-    public void Move(Vector3 moveVector)
+    public void Move(Vector2 moveVector, Vector3 lookVector)
     {
+		rigidbody.velocity = GetUpdatedVelocity(CalculateRotatedLookVector(moveVector, new Vector2(lookVector.x, lookVector.z)));
 
-		rigidbody.velocity = GetLimitedVelocity(GetUpdatedVelocity(moveVector));
+		Vector3 flatLookVector = new Vector3(lookVector.x, 0, lookVector.z);
+
+		Look(flatLookVector);
+
+		Debug.DrawRay(Player.transform.position, flatLookVector, Color.red, 10f);// * (flatLookVector.magnitude/MaxSpeed));
     }
 
-	private Vector3 GetUpdatedVelocity( Vector3 moveVector )
+
+	public void Look(Vector3 lookVector)
 	{
-		return rigidbody.velocity + (moveVector * Acceleration);
+		float speed = rigidbody.velocity.magnitude / MaxSpeed;
+		float step = speed * Time.deltaTime;
+		Vector3 newDir = Vector3.RotateTowards(Player.transform.forward, lookVector, step, 0.0F);
+		Debug.DrawRay(Player.transform.position, newDir, Color.red);
+		Player.transform.rotation = Quaternion.LookRotation(newDir);
+	}
+
+	private Vector2 CalculateRotatedLookVector(Vector2 moveVector, Vector2 LookVector)
+	{
+		return new Vector2(
+			moveVector.x * Mathf.Cos(LookVector.x) + moveVector.y * Mathf.Sin(LookVector.x),
+			moveVector.x * Mathf.Cos(LookVector.y) + moveVector.y * Mathf.Sin(LookVector.y));
+	}
+
+
+
+	private Vector3 GetUpdatedVelocity( Vector2 moveVector )
+	{
+
+		//Debug.Log("Move Vector: " + moveVector);
+		Vector3 LimitedVelocity = GetLimitedVelocity(rigidbody.velocity + (new Vector3(moveVector.x, 0, moveVector.y) * Acceleration));
+		Vector3 RotatedLimitedVelocity = new Vector3(LimitedVelocity.x, LimitedVelocity.y, LimitedVelocity.z);
+		//Debug.Log("New movement: " + LimitedVelocity);
+		return RotatedLimitedVelocity;
 	}
 
 	private Vector3 GetLimitedVelocity(Vector3 currentVelocity)
@@ -47,6 +83,7 @@ public class PlayerMovementController : MonoBehaviour, IMovementController
 		if(flatVelocity.magnitude > MaxSpeed)
 		{
 			flatVelocity *= (MaxSpeed/flatVelocity.magnitude);
+			Debug.Log("Flat Velocity: " + flatVelocity);
 		}
 		return flatVelocity;
 	}

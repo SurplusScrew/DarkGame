@@ -4,7 +4,9 @@ using UnityEngine;
 
 public interface IMovementController
 {
+    GameObject Player { get; set; }
+
     void Jump(float jumpStrength);
-    void Move(Vector3 moveVector);
+    void Move(Vector2 moveVector, Vector3 forwardVector);
     float GetAcceleration();
 }

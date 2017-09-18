@@ -14,6 +14,8 @@ namespace TestTools
 			PlayerController player;
 			IInputManager input;
 			IMovementController movement;
+
+			IRigidbodyPhysicsManager physics;
 			public void Setup()
 			{
 				player = new GameObject("TEST_Player").AddComponent<PlayerController>();
@@ -34,7 +36,7 @@ namespace TestTools
 			[PrebuildSetup(typeof(PlayerControllerTest.Movement))]
 			public IEnumerator Player_WhenLeftInputReceived_MoveLeft()
 			{
-				input.GetInputVector().Returns(new Vector2(-1, 0));
+				input.GetMoveVector().Returns(new Vector2(-1, 0));
 
 				yield return null;
 
@@ -46,7 +48,7 @@ namespace TestTools
 			public IEnumerator Player_WhenRightInputReceived_MoveRight()
 			{
 
-				input.GetInputVector().Returns(new Vector2(1, 0));
+				input.GetMoveVector().Returns(new Vector2(1, 0));
 
 				yield return null;
 
@@ -57,7 +59,7 @@ namespace TestTools
 			[PrebuildSetup(typeof(PlayerControllerTest.Movement))]
 			public IEnumerator Player_WhenBackInputReceived_MoveBack()
 			{
-				input.GetInputVector().Returns(new Vector2(0, -1));
+				input.GetMoveVector().Returns(new Vector2(0, -1));
 
 				yield return null;
 
@@ -68,7 +70,7 @@ namespace TestTools
 			[PrebuildSetup(typeof(PlayerControllerTest.Movement))]
 			public IEnumerator Player_WhenForwardInputReceived_MoveForward()
 			{
-				input.GetInputVector().Returns(new Vector2(0, 1));
+				input.GetMoveVector().Returns(new Vector2(0, 1));
 
 				yield return null;
 
@@ -82,9 +84,9 @@ namespace TestTools
 			[PrebuildSetup(typeof(PlayerControllerTest.Movement))]
 			public IEnumerator Player_WhenJumpInputReceivedAndOnGround_Jumps()
 			{
-				player.IsOnSurface().Returns(true);
+				physics.IsGrounded().Returns(true);
 
-				player.Jump();
+				movement.Jump(player.JumpStrength);
 
 				yield return null;
 
@@ -95,11 +97,11 @@ namespace TestTools
 			[PrebuildSetup(typeof(PlayerControllerTest.Movement))]
 			public IEnumerator Player_WhenJumpInputReceivedAndNotOnGround_DoesNotJump()
 			{
-				player.IsOnSurface().Returns(false);
-
 				Vector3 playerPosition = player.transform.position;
 
-				player.Jump();
+				physics.IsGrounded().Returns(true);
+
+				movement.Jump(player.JumpStrength);
 
 				yield return null;
 
@@ -110,13 +112,13 @@ namespace TestTools
 			[PrebuildSetup(typeof(PlayerControllerTest.Movement))]
 			public IEnumerator PlayerIsOnSurface_WhenJumpInputReceived_PlayerIsOnSurfaceReturnsFalse()
 			{
-				Assert.IsTrue(player.IsOnSurface());
+				Assert.IsTrue(physics.IsGrounded());
 
-				player.Jump();
+				movement.Jump(player.JumpStrength);
 
 				yield return null;
 
-				Assert.IsFalse(player.IsOnSurface());
+				Assert.IsFalse(physics.IsGrounded());
 			}
 
 			#endregion
