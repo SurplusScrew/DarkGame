@@ -28,12 +28,12 @@ namespace InControl
 
 		static void UpdateVersion()
 		{
-			string versionPath = "Assets/InControl/Source/VersionInfo.cs";
+			string versionPath = "Assets/Plugins/InControl/Source/VersionInfo.cs";
 			string versionText = GetFileContents( versionPath );
 			if (versionText != null)
 			{
 				versionText = Regex.Replace( versionText, @"Build = (?<value>\d+)", ReplaceFunc );
-				PutFileContents( versionPath, versionText );				
+				PutFileContents( versionPath, versionText );
 				AssetDatabase.Refresh();
 			}
 		}
@@ -47,11 +47,11 @@ namespace InControl
 
 
 		static string GetFileContents( string fileName )
-		{			
+		{
 			StreamReader streamReader = new StreamReader( fileName );
 			var fileContents = streamReader.ReadToEnd();
 			streamReader.Close();
-			
+
 			return fileContents;
 		}
 

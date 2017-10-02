@@ -4,14 +4,14 @@ using UnityEngine;
 public class PlayerMovementController : MonoBehaviour, IMovementController
 {
 	[SerializeField]
-	private float Acceleration = 0.1f;
-
+	public float Acceleration = 0.5f;
+	public float Deceleration = 0.5f;
 
 	[SerializeField]
 	public float MaxSpeed = 7f;
 
 	private IRigidbodyPhysicsManager physicsManager;
-	private Rigidbody rigidbody;
+	private new Rigidbody rigidbody;
 
     public GameObject Player
     {
@@ -88,6 +88,7 @@ public class PlayerMovementController : MonoBehaviour, IMovementController
 		return flatVelocity;
 	}
 
+	private void
     public float GetAcceleration()
     {
         return Acceleration;

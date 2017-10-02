@@ -6,8 +6,8 @@ using UnityEngine;
 public class PlayerPhysicsManager : MonoBehaviour, IRigidbodyPhysicsManager
 {
 
-    private Collider collider;
-    private Rigidbody rigidbody;
+    private new Collider collider;
+    private new Rigidbody rigidbody;
 
     [SerializeField]
     public float CollisionCheckRange = 0.025f;
@@ -28,9 +28,8 @@ public class PlayerPhysicsManager : MonoBehaviour, IRigidbodyPhysicsManager
         Ray ray = new Ray(GetBottomOfPlayerObject(), Vector3.down);
 		Debug.DrawRay(GetBottomOfPlayerObject(), Vector3.down, Color.red, CollisionCheckRange);
 		Physics.Raycast(ray, out hit, CollisionCheckRange);
-        //Debug.Log("Raycast has hit " + hit.collider);
         return hit.collider != null;
-        //(GetBottomOfPlayerObject(), transform.TransformDirection(Vector3.down), 0.025f);
+
     }
 
     public void Jump( float jumpStrength)

@@ -18,8 +18,8 @@ public class PlayerController : MonoBehaviour {
 	}
 	[SerializeField]
 	private float jumpStrength = 5;
-    public IInputManager inputManager { get; internal set; }
-	public IMovementController movementController{ get; internal set; }
+    public IInputManager inputManager { get; set; }
+	public IMovementController movementController{ get; set; }
 
 	private ICameraController cameraController;
 
@@ -28,19 +28,24 @@ public class PlayerController : MonoBehaviour {
     void Awake()
 	{
 		inputManager = GetComponent<IInputManager>();
-		if(inputManager == null) inputManager = gameObject.AddComponent<InControlInputManager>();
+
+		//Lazy loaded
+		if(inputManager == null) inputManager = gameObject.AddComponent<MB_InControlInputManager>();
 
 		movementController = GetComponent<IMovementController>();
+
+		//Lazy loaded
 		if(movementController == null) movementController = gameObject.AddComponent<PlayerMovementController>();
 		movementController.Player = Player;
 
 
-		cameraController = GetComponentInChildren<PlayerCameraController>();
+		cameraController = GetComponentInChildren<ICameraController>();
 		cameraController.Camera = Camera;
+
 		cameraController.ChaseTarget(Player);
 	}
 
-	void Update()
+	void FixedUpdate()
 	{
 		cameraController.Rotate(inputManager.GetLookVector());
 		movementController.Move(inputManager.GetMoveVector(), cameraController.GetForwardVector());
