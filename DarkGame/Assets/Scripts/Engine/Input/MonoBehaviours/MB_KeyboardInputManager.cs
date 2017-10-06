@@ -1,7 +1,8 @@
 public class MB_KeyboardInputManager : MB_InputManager
 {
-    private void Awake()
+    protected void Awake()
 	{
-		Manager = new KeyboardGameplayInputManager(ref inputActions);
+        base.Awake();
+		Manager = new KeyboardGameplayInputManager(ref actionMap );
 	}
 }

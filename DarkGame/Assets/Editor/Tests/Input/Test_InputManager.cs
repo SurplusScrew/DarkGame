@@ -8,7 +8,7 @@ namespace Tests
     public class Test_InputManager
    {
        InControlGameplayInputManager manager;
-        InputAction[] actions;
+        ActionMap actions;
         IInputService InputService;
 
         [SetUp]
@@ -16,7 +16,8 @@ namespace Tests
         {
             InputService = Substitute.For<IInputService>();
 
-            actions = new InputAction[]{
+            actions = new ActionMap();
+            actions.actions = new InputAction[]{
 
                 new InputAction{
                     action = Action.Jump,

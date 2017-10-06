@@ -1,7 +1,8 @@
 public class MB_InControlInputManager : MB_InputManager
 {
-    private void Awake()
+    protected void Awake()
 	{
-		Manager = new InControlGameplayInputManager(ref inputActions);
+        base.Awake();
+		Manager = new InControlGameplayInputManager(ref actionMap);
 	}
 }

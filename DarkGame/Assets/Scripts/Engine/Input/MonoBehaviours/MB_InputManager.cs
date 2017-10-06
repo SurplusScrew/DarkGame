@@ -2,15 +2,16 @@
 using InControl;
 using UnityEngine;
 
-
+[RequireComponent(typeof(MB_ActionMapWrapper))]
 public abstract class MB_InputManager : MonoBehaviour, IInputManager
 {
-	public InputAction[] inputActions;
+	protected ActionMap actionMap;
 	protected IInputManager Manager;
-   /* private void Awake()
+
+    protected void Awake()
 	{
-		Manager = new GameplayInputManager(ref inputActions);
-    }*/
+		actionMap = GetComponent<MB_ActionMapWrapper>().actionMap;
+    }
 	public bool ButtonIsPressed(Action action)
     {
 		return Manager.ButtonIsPressed(action);

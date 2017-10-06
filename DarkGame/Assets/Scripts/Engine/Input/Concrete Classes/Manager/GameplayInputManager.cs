@@ -2,16 +2,16 @@ using UnityEngine;
 
 public abstract class GameplayInputManager : IInputManager
 {
-	public InputAction[] inputActions;
+	public ActionMap inputActions;
 	public IInputService inputService;
 
-	public GameplayInputManager(ref InputAction[] actions)
+	public GameplayInputManager(ref ActionMap actions)
 	{
 		inputActions = actions;
 	}
     public bool ButtonIsPressed(Action action)
     {
-		foreach(InputAction iAction in inputActions)
+		foreach(InputAction iAction in inputActions.actions)
 		{
 			if(iAction.action == action)
 			{
