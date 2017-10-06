@@ -88,7 +88,7 @@ public class PlayerMovementController : MonoBehaviour, IMovementController
 		return flatVelocity;
 	}
 
-	private void
+
     public float GetAcceleration()
     {
         return Acceleration;

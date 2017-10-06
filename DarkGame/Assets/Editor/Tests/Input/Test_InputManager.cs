@@ -7,7 +7,7 @@ namespace Tests
 {
     public class Test_InputManager
    {
-       InControlInputManager manager;
+       InControlGameplayInputManager manager;
         InputAction[] actions;
         IInputService InputService;
 
@@ -24,7 +24,7 @@ namespace Tests
                 }
             };
 
-            manager = new InControlInputManager(ref actions);
+            manager = new InControlGameplayInputManager(ref actions);
             manager.inputService = InputService;
 
         }

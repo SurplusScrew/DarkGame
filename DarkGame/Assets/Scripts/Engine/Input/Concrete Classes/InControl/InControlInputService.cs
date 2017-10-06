@@ -1,20 +1,5 @@
-using System;
 using InControl;
 using UnityEngine;
-
-public interface IInputService
-{
-	Vector2 LeftStick
-	{
-		get;
-	}
-	Vector2 RightStick
-	{
-		get;
-	}
-
-	bool GetControlIsDown(InputControlType action);
-}
 
 public class InControlInputService : IInputService
 {

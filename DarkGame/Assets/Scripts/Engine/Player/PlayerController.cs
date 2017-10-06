@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour {
 	}
 	[SerializeField]
 	private float jumpStrength = 5;
-    public IInputManager inputManager { get; set; }
+    public IInputManager[] inputManagers { get; set; }
 	public IMovementController movementController{ get; set; }
 
 	private ICameraController cameraController;
@@ -27,10 +27,10 @@ public class PlayerController : MonoBehaviour {
 
     void Awake()
 	{
-		inputManager = GetComponent<IInputManager>();
+		inputManagers = GetComponents<IInputManager>();
 
 		//Lazy loaded
-		if(inputManager == null) inputManager = gameObject.AddComponent<MB_InControlInputManager>();
+		if(inputManagers.Length == 0) inputManagers = new IInputManager[]{ gameObject.AddComponent<MB_KeyboardInputManager>() };
 
 		movementController = GetComponent<IMovementController>();
 
@@ -47,14 +47,27 @@ public class PlayerController : MonoBehaviour {
 
 	void FixedUpdate()
 	{
-		cameraController.Rotate(inputManager.GetLookVector());
-		movementController.Move(inputManager.GetMoveVector(), cameraController.GetForwardVector());
+		Vector2 look = Vector2.zero;
+		Vector2 move = Vector2.zero;
+
+		foreach( IInputManager inputManager in inputManagers )
+		{
+			if(look == Vector2.zero) look = inputManager.GetLookVector();
+			if(move == Vector2.zero) move = inputManager.GetMoveVector();
+		}
+		cameraController.Rotate(look);
+		movementController.Move(move, cameraController.GetForwardVector());
 	}
 
 	// Update is called once per frame
 	void LateUpdate ()
 	{
-		if(inputManager.ButtonIsPressed(Action.Jump))
+		bool jump = false;
+		foreach( IInputManager inputManager in inputManagers )
+		{
+			jump |= inputManager.ButtonIsPressed(Action.Jump);
+		}
+		if(jump)
 		{
 			movementController.Jump(JumpStrength);
 		}
