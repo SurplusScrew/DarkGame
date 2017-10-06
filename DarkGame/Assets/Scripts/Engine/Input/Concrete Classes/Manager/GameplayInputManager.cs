@@ -8,7 +8,6 @@ public abstract class GameplayInputManager : IInputManager
 	public GameplayInputManager(ref InputAction[] actions)
 	{
 		inputActions = actions;
-		inputService = new InControlInputService();
 	}
     public bool ButtonIsPressed(Action action)
     {
