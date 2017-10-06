@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Tests
 {
-    public class Test_InputManager
+    public class Test_InControlInputManager
    {
        InControlGameplayInputManager manager;
         ActionMap actions;
@@ -26,7 +26,7 @@ namespace Tests
             };
 
             manager = new InControlGameplayInputManager(ref actions);
-            manager.inputService = InputService;
+            manager.InputService = InputService;
 
         }
 

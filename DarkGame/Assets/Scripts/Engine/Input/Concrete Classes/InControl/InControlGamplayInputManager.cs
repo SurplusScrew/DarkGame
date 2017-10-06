@@ -3,6 +3,6 @@ public class InControlGameplayInputManager : GameplayInputManager
     public InControlGameplayInputManager(ref ActionMap actions)
     : base(ref actions)
 	{
-        inputService = new InControlInputService();
+        InputService = new InControlInputService();
 	}
 }
