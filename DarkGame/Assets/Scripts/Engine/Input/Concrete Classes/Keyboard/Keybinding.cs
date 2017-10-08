@@ -1,9 +1,16 @@
 using UnityEngine;
 using InControl;
+using System.Collections.Generic;
 
 public class Keybinding
 {
-    public InputAction[] actions;
+    public Dictionary<InControl.InputControlType, KeyCode> actions;
+
+    public Keybinding()
+    {
+        actions = new Dictionary<InControl.InputControlType, KeyCode>();
+        actions.Add(InputControlType.Action1, KeyCode.Space);
+    }
     public KeyCode MoveUp
     {
         get{
@@ -55,6 +62,6 @@ public class Keybinding
     }
     public KeyCode GetControl(InputControlType action)
     {
-        return KeyCode.None;
+        return actions[action];
     }
 }

@@ -18,8 +18,10 @@ public class PlayerController : MonoBehaviour {
 	}
 	[SerializeField]
 	private float jumpStrength = 5;
-    public IInputManager[] inputManagers { get; set; }
-	public IMovementController movementController{ get; set; }
+    public IInputManager[] InputManagers { get; set; }
+	public IMovementController MovementController{ get; set; }
+
+	public IRigidbodyPhysicsManager PhysicsManager{get;set;}
 
 	private ICameraController cameraController;
 
@@ -27,22 +29,20 @@ public class PlayerController : MonoBehaviour {
 
     void Awake()
 	{
-		inputManagers = GetComponents<IInputManager>();
+		//Lazy loaded
+		InputManagers = GetComponents<IInputManager>();
+		if(InputManagers.Length == 0) InputManagers = new IInputManager[]{ gameObject.AddComponent<MB_KeyboardInputManager>() };
 
 		//Lazy loaded
-		if(inputManagers.Length == 0) inputManagers = new IInputManager[]{ gameObject.AddComponent<MB_KeyboardInputManager>() };
-
-		movementController = GetComponent<IMovementController>();
-
-		//Lazy loaded
-		if(movementController == null) movementController = gameObject.AddComponent<PlayerMovementController>();
-		movementController.Player = Player;
-
+		MovementController = GetComponent<IMovementController>();
+		if(MovementController == null) MovementController = Player.AddComponent<MB_PlayerMovementController>();
 
 		cameraController = GetComponentInChildren<ICameraController>();
 		cameraController.Camera = Camera;
-
 		cameraController.ChaseTarget(Player);
+
+		PhysicsManager = GetComponent<IRigidbodyPhysicsManager>();
+		if(PhysicsManager == null) PhysicsManager = Player.AddComponent<PlayerPhysicsManager>();
 	}
 
 	void FixedUpdate()
@@ -50,26 +50,27 @@ public class PlayerController : MonoBehaviour {
 		Vector2 look = Vector2.zero;
 		Vector2 move = Vector2.zero;
 
-		foreach( IInputManager inputManager in inputManagers )
+		foreach( IInputManager inputManager in InputManagers )
 		{
 			if(look == Vector2.zero) look = inputManager.GetLookVector();
 			if(move == Vector2.zero) move = inputManager.GetMoveVector();
 		}
 		cameraController.Rotate(look);
-		movementController.Move(move, cameraController.GetForwardVector());
+
+		MovementController.Move(move, Camera.transform);
 	}
 
-	// Update is called once per frame
+
 	void LateUpdate ()
 	{
 		bool jump = false;
-		foreach( IInputManager inputManager in inputManagers )
+		foreach( IInputManager inputManager in InputManagers )
 		{
 			jump |= inputManager.ButtonIsPressed(Action.Jump);
 		}
 		if(jump)
 		{
-			movementController.Jump(JumpStrength);
+			PhysicsManager.Jump(JumpStrength);
 		}
 	}
 }

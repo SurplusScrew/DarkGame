@@ -4,9 +4,6 @@ using UnityEngine;
 
 public interface IMovementController
 {
-    GameObject Player { get; set; }
+     void Move(Vector2 moveDirection, Transform camera);
 
-    void Jump(float jumpStrength);
-    void Move(Vector2 moveVector, Vector3 forwardVector);
-    float GetAcceleration();
 }
