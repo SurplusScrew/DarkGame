@@ -6,7 +6,7 @@ using UnityEngine;
 public abstract class MB_InputManager : MonoBehaviour, IInputManager
 {
 	protected ActionMap actionMap;
-	protected IInputManager Manager;
+	protected IInputManagerImpl Manager;
 
     protected void Awake()
 	{

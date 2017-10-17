@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class PlayerMovementController
+public class PlayerMovementController : IMovementControllerImpl
 {
     public float Acceleration{ get; protected set;}
 	public float Deceleration{ get; protected set;}
@@ -15,14 +15,12 @@ public class PlayerMovementController
 
     public Vector3 Move(Vector2 moveVector, Vector3 lookVectorForward, Vector3 lookVectorRight, Vector3 initialVelocity)
     {
-		Vector2 RotatedLookVector = CalculateRotatedLookVector(moveVector, UtilMaths.V3toV2_XZ(lookVectorForward), UtilMaths.V3toV2_XZ(lookVectorRight));
-		Debug.Log("RotatedLookVector: " + RotatedLookVector);
+		Vector2 RotatedLookVector = CalculateRotatedLookVector(
+			moveVector,
+			UtilMaths.V3toV2_XZ(lookVectorForward),
+			UtilMaths.V3toV2_XZ(lookVectorRight));
+
 		return UpdatedVelocity(RotatedLookVector, initialVelocity);
-
-		//Debug.DrawRay(Player.transform.position, flatLookVector, Color.red, 10f);// * (flatLookVector.magnitude/MaxSpeed));
-
-		//return updatedVelocity;
-
     }
 
 	public Quaternion UpdateModelRotation(Vector3 lookVector, Vector3 forward, float currentMovementSpeed)
@@ -30,21 +28,19 @@ public class PlayerMovementController
 		//Rotate faster if you're already moving
 		float speed = currentMovementSpeed / MaxSpeed;
 		float step = speed * Time.deltaTime;
+
 		Vector3 newDir = Vector3.RotateTowards(forward, lookVector, step, 0.0F);
-		//Debug.DrawRay(Player.transform.position, newDir, Color.red);
+
 		return Quaternion.LookRotation(newDir);
 	}
 
 	private Vector2 CalculateRotatedLookVector(Vector2 moveVector, Vector2 CamForwardVector, Vector2 CamRightVector)
 	{
-		Debug.Log("CamForward: " + CamForwardVector);
 		return new Vector2(
 			moveVector.y * CamForwardVector.x + moveVector.x * CamRightVector.x ,
 			moveVector.y * CamForwardVector.y + moveVector.x * CamRightVector.y
 		);
 	}
-
-
 
 	private Vector3 UpdatedVelocity( Vector2 moveVector, Vector3 currentVelocity )
 	{

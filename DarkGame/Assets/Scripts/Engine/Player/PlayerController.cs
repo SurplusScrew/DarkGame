@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour {
     public IInputManager[] InputManagers { get; set; }
 	public IMovementController MovementController{ get; set; }
 
-	public IRigidbodyPhysicsManager PhysicsManager{get;set;}
+	public ICharacterPhysicsManager PhysicsManager{get;set;}
 
 	private ICameraController cameraController;
 
@@ -41,8 +41,8 @@ public class PlayerController : MonoBehaviour {
 		cameraController.Camera = Camera;
 		cameraController.ChaseTarget(Player);
 
-		PhysicsManager = GetComponent<IRigidbodyPhysicsManager>();
-		if(PhysicsManager == null) PhysicsManager = Player.AddComponent<PlayerPhysicsManager>();
+		PhysicsManager = GetComponent<ICharacterPhysicsManager>();
+		if(PhysicsManager == null) PhysicsManager = Player.AddComponent<MB_PlayerPhysicsManager>();
 	}
 
 	void FixedUpdate()
@@ -57,7 +57,15 @@ public class PlayerController : MonoBehaviour {
 		}
 		cameraController.Rotate(look);
 
-		MovementController.Move(move, Camera.transform);
+		PhysicsManager.SetVelocity(
+			MovementController.Move(
+				move,
+				Camera.transform,
+				PhysicsManager.GetVelocity()
+				)
+			);
+
+		Player.transform.rotation = MovementController.Rotate(Camera.transform, PhysicsManager.GetVelocity().magnitude);
 	}
 
 
@@ -70,6 +78,7 @@ public class PlayerController : MonoBehaviour {
 		}
 		if(jump)
 		{
+			Debug.Log("Jumping");
 			PhysicsManager.Jump(JumpStrength);
 		}
 	}

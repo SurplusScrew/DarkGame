@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class GameplayInputManager : IInputManager
+public abstract class GameplayInputManager : IInputManagerImpl
 {
 	public ActionMap InputActions;
 	public IInputService InputService{

@@ -3,51 +3,57 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class MB_PlayerPhysicsManager : MonoBehaviour, IRigidbodyPhysicsManager
+public class MB_PlayerPhysicsManager : MonoBehaviour, ICharacterPhysicsManager
 {
 
-    private new Collider collider;
-    private new Rigidbody rigidbody;
+    private IRigidbodyService Rigidbody;
+
+    private IColliderService Collider;
+
+    private PlayerPhysicsManager physicsManager;
+
+    private IRaycastService Raycast;
 
     [SerializeField]
-    public float CollisionCheckRange = 0.025f;
+    public float CollisionCheckRange = 0.25f;
+    public float BottomOffset = 0.01f;
 
     public void Awake()
     {
-        collider = GetComponent<Collider>();
-        rigidbody = GetComponent<Rigidbody>();
+        Collider = new UnityColliderService(GetComponentInChildren<Collider>());
+        Rigidbody = new UnityRigidbodyService(GetComponentInChildren<Rigidbody>());
+        Raycast = new UnityRaycastService();
+
+        physicsManager = new PlayerPhysicsManager(ref Collider, ref Rigidbody,  ref CollisionCheckRange, ref Raycast);
+
     }
 
     public void Update()
     {
-        rigidbody.useGravity = !IsGrounded();
-    }
-    public bool IsGrounded()
-    {
-        RaycastHit hit;
-        Ray ray = new Ray(GetBottomOfPlayerObject(), Vector3.down);
-		Debug.DrawRay(GetBottomOfPlayerObject(), Vector3.down, Color.red, CollisionCheckRange);
-		Physics.Raycast(ray, out hit, CollisionCheckRange);
-        return hit.collider != null;
-
+        Rigidbody.useGravity = !IsGrounded();
     }
 
     public void Jump( float jumpStrength)
     {
-        Debug.Log("Trying to jump.");
-        if(IsGrounded())
-        {
-            Debug.Log("Jumping!");
-            rigidbody.AddForceAtPosition(new Vector3(0,jumpStrength, 0), transform.position, ForceMode.Impulse);
-        }
+        physicsManager.Jump(jumpStrength, transform.position);
     }
     public void SetGravityEnabled(bool enabled)
     {
-        rigidbody.useGravity = enabled;
+        physicsManager.SetGravityEnabled(enabled);
     }
 
-    private Vector3 GetBottomOfPlayerObject()
-	{
-		return transform.position - new Vector3(0, collider.bounds.extents.y - 0.01f, 0);
-	}
+    public bool IsGrounded()
+    {
+        return physicsManager.IsGrounded(transform.position);
+    }
+
+    public void SetVelocity(Vector3 velocity)
+    {
+        Rigidbody.velocity = velocity;
+    }
+
+    public Vector3 GetVelocity()
+    {
+        return Rigidbody.velocity;
+    }
 }

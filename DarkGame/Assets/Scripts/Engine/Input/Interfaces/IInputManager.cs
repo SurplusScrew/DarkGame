@@ -16,3 +16,14 @@ public interface IInputManager
     bool ButtonIsPressed(Action action);
 
 }
+
+
+public interface IInputManagerImpl
+{
+    Vector2 GetMoveVector();
+    Vector2 GetLookVector();
+    bool ButtonIsPressed(Action action);
+
+}
+
+

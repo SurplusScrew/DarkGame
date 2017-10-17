@@ -3,51 +3,48 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class PlayerPhysicsManager : MonoBehaviour, IRigidbodyPhysicsManager
+public class PlayerPhysicsManager : ICharacterPhysicsManagerImpl
 {
+    public IColliderService Collider{get; private set; }
 
-    private new Collider collider;
-    private new Rigidbody rigidbody;
+    public IRigidbodyService Rigidbody{get; private set;}
+    private float CollisionCheckRange;
+    private IRaycastService Raycast;
 
-    [SerializeField]
-    public float CollisionCheckRange = 0.025f;
-
-    public void Awake()
+    public PlayerPhysicsManager(
+        ref IColliderService collider,
+        ref IRigidbodyService rigidbody,
+        ref float collisionCheckRange,
+        ref IRaycastService raycast)
     {
-        collider = GetComponent<Collider>();
-        rigidbody = GetComponent<Rigidbody>();
+        Collider = collider;
+        Rigidbody = rigidbody;
+        CollisionCheckRange = collisionCheckRange;
+        Raycast = raycast;
     }
 
-    public void Update()
+    public bool IsGrounded(Vector3 playerPosition)
     {
-        rigidbody.useGravity = !IsGrounded();
-    }
-    public bool IsGrounded()
-    {
-        RaycastHit hit;
-        Ray ray = new Ray(GetBottomOfPlayerObject(), Vector3.down);
-		Debug.DrawRay(GetBottomOfPlayerObject(), Vector3.down, Color.red, CollisionCheckRange);
-		Physics.Raycast(ray, out hit, CollisionCheckRange);
-        return hit.collider != null;
+        Vector3 playerBottom = playerPosition - GetColliderYBounds();
+
+        return Raycast.HasHitSomething(playerBottom, Vector3.down, CollisionCheckRange);
 
     }
 
-    public void Jump( float jumpStrength)
+    private Vector3 GetColliderYBounds(float offset = 0.01f)
+	{
+		return new Vector3(0, Collider.bounds.extents.y - offset, 0);
+	}
+
+    public void Jump( float jumpStrength, Vector3 playerPosition)
     {
-        Debug.Log("Trying to jump.");
-        if(IsGrounded())
+        if(IsGrounded(playerPosition))
         {
-            Debug.Log("Jumping!");
-            rigidbody.AddForceAtPosition(new Vector3(0,jumpStrength, 0), transform.position, ForceMode.Impulse);
+            Rigidbody.AddForce(new Vector3(0,jumpStrength, 0), ForceMode.Impulse);
         }
     }
     public void SetGravityEnabled(bool enabled)
     {
-        rigidbody.useGravity = enabled;
+        Rigidbody.useGravity = enabled;
     }
-
-    private Vector3 GetBottomOfPlayerObject()
-	{
-		return transform.position - new Vector3(0, collider.bounds.extents.y - 0.01f, 0);
-	}
 }
