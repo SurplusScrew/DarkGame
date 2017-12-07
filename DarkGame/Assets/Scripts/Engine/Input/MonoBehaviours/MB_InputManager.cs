@@ -10,7 +10,7 @@ public abstract class MB_InputManager : MonoBehaviour, IInputManager
 
     protected void Awake()
 	{
-		actionMap = GetComponent<MB_ActionMapWrapper>().actionMap;
+		actionMap = GetComponent<MB_ActionMapWrapper>().ActionMap;
     }
 	public bool ButtonIsPressed(Action action)
     {

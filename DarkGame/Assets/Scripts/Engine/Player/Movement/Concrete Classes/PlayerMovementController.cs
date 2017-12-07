@@ -20,7 +20,8 @@ public class PlayerMovementController : IMovementControllerImpl
 			UtilMaths.V3toV2_XZ(lookVectorForward),
 			UtilMaths.V3toV2_XZ(lookVectorRight));
 
-		return UpdatedVelocity(RotatedLookVector, initialVelocity);
+		Vector3 UpdatedVel = UpdatedVelocity(RotatedLookVector, initialVelocity);
+		return UpdatedVel;
     }
 
 	public Quaternion UpdateModelRotation(Vector3 lookVector, Vector3 forward, float currentMovementSpeed)
@@ -58,13 +59,9 @@ public class PlayerMovementController : IMovementControllerImpl
 		{
 			return move * Acceleration;
 		}
-		else
+		else if(!Mathf.Approximately( 0, currentVelocity ))
 		{
-			if(!Mathf.Approximately( 0, currentVelocity ))
-			{
-				return Decelerate(currentVelocity);
-
-			}
+			return Decelerate(currentVelocity);
 		}
 		return 0;
     }

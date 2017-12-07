@@ -11,68 +11,49 @@ namespace Tests.Physics
         private IColliderService collider;
         private IRigidbodyService rigidbody;
         private IRaycastService Raycast;
-        private float collisionCheckRange;
+        private float CollisionCheckRange;
+        private float BottomOffset;
 
 
         [SetUp]
         public void setup()
         {
             collider = Substitute.For<IColliderService>();
-            collider.bounds.Returns(new Bounds(Vector3.zero, new Vector3(1f,1f,1f)));
+            collider.GetBounds().Returns(new Bounds(Vector3.zero, new Vector3(1f,1f,1f)));
 
             Raycast = Substitute.For<IRaycastService>();
 
+            rigidbody = new TestRigidbodyService();
 
-            playerPhysicsManager = new PlayerPhysicsManager(ref collider, ref rigidbody, ref collisionCheckRange, ref Raycast);
+            playerPhysicsManager = new PlayerPhysicsManager(ref collider, ref rigidbody, ref BottomOffset, ref CollisionCheckRange, ref Raycast);
         }
 
         [Test]
         public void Jumping_withJumpStrength0_YPositionDoesNotChange()
         {
-            Raycast.HasHitSomething(Vector3.zero, Vector3.zero, 0).Returns(true);
+            Raycast.HasHitSomething(Vector3.zero, Vector3.zero, 0).ReturnsForAnyArgs(true);
             playerPhysicsManager.Jump(0,Vector3.zero);
             Assert.AreEqual(rigidbody.velocity, Vector3.zero);
         }
         [Test]
         public void Jumping_withJumpStrength10_YPositionChanges()
         {
-            Raycast.HasHitSomething(Vector3.zero, Vector3.zero, 0).Returns(true);
+            Raycast.HasHitSomething(Vector3.zero, Vector3.zero, 0).ReturnsForAnyArgs(true);
             playerPhysicsManager.Jump(10,Vector3.zero);
-            Assert.AreEqual(rigidbody.velocity, new Vector3(0,10,0));
+            Assert.AreEqual(new Vector3(0,10,0), rigidbody.velocity);
         }
 
-
- /*public void Jump( float jumpStrength, Vector3 playerPosition)
-    {
-        if(IsGrounded(playerPosition))
+        [Test]
+        public void Jumping_withJumpStrength10AndNotOnGround_YPositionDoesNotChange()
         {
-            Rigidbody.AddForce(new Vector3(0,jumpStrength, 0), ForceMode.Impulse);
+            Raycast.HasHitSomething(Vector3.zero, Vector3.zero, 0).ReturnsForAnyArgs(false);
+            playerPhysicsManager.Jump(10,Vector3.zero);
+            Assert.AreNotEqual(new Vector3(0,10,0), rigidbody.velocity);
         }
-    }
-    public void SetGravityEnabled(bool enabled)
-    {
-        Rigidbody.useGravity = enabled;
-    }
-     public bool IsGrounded(Vector3 playerPosition)
-    {
-        Vector3 playerBottom = playerPosition - GetColliderYBounds();
 
-        //Wrap this in a service object to enable ease of testing.
-        //---
-        RaycastHit hit;
-        Ray ray = new Ray(playerBottom, Vector3.down);
-        Debug.DrawRay(playerBottom, Vector3.down, Color.red, 4f);
-		Physics.Raycast(ray, out hit, CollisionCheckRange);
-
-        bool IsGrounded = hit.collider != null;
-        //----
-
-        return IsGrounded;
-
-    }*/
     }
 
-    public class TestRigidbodyService
+    public class TestRigidbodyService : IRigidbodyService
     {
         public bool useGravity
         {

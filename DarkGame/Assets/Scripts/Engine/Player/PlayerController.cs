@@ -18,7 +18,8 @@ public class PlayerController : MonoBehaviour {
 	}
 	[SerializeField]
 	private float jumpStrength = 5;
-    public IInputManager[] InputManagers { get; set; }
+
+	public InputController ButtonInputController{get;set;}
 	public IMovementController MovementController{ get; set; }
 
 	public ICharacterPhysicsManager PhysicsManager{get;set;}
@@ -29,59 +30,97 @@ public class PlayerController : MonoBehaviour {
 
     void Awake()
 	{
-		//Lazy loaded
-		InputManagers = GetComponents<IInputManager>();
-		if(InputManagers.Length == 0) InputManagers = new IInputManager[]{ gameObject.AddComponent<MB_KeyboardInputManager>() };
+		InitializeInputs();
+		InitializeMovementController();
+		InitializeCameraController();
+		InitializePhysicsManager();
+		RegisterCommandDelegates();
+	}
 
+	void InitializeInputs()
+	{
+		//Lazy loaded
+		IInputManager[] InputManagers = GetComponents<IInputManager>();
+		if(InputManagers.Length == 0)
+		{
+			InputManagers = new IInputManager[]{ gameObject.AddComponent<MB_KeyboardInputManager>() };
+		}
+
+		ActionMap ActionMap = GetComponent<MB_ActionMapWrapper>().ActionMap;
+
+		ButtonInputController = new InputController(ActionMap,  InputManagers);
+	}
+
+	void InitializeMovementController()
+	{
 		//Lazy loaded
 		MovementController = GetComponent<IMovementController>();
-		if(MovementController == null) MovementController = Player.AddComponent<MB_PlayerMovementController>();
+		if(MovementController == null)
+		{
+			MovementController = Player.AddComponent<MB_PlayerMovementController>();
+		}
+	}
 
+	void InitializeCameraController()
+	{
 		cameraController = GetComponentInChildren<ICameraController>();
 		cameraController.Camera = Camera;
 		cameraController.ChaseTarget(Player);
-
-		PhysicsManager = GetComponent<ICharacterPhysicsManager>();
-		if(PhysicsManager == null) PhysicsManager = Player.AddComponent<MB_PlayerPhysicsManager>();
 	}
 
+	void InitializePhysicsManager()
+	{
+		PhysicsManager = Player.GetComponent<ICharacterPhysicsManager>();
+		if(PhysicsManager == null)
+		{
+			PhysicsManager = Player.AddComponent<MB_PlayerPhysicsManager>();
+		}
+	}
+
+	void RegisterCommandDelegates()
+	{
+		ButtonInputController.RegisterButtonDelegate(Action.Jump, this.Jump);
+		ButtonInputController.RegisterButtonDelegate(Action.Climb, this.Climb);
+		Debug.Log("Delegates registered");
+	}
 	void FixedUpdate()
 	{
-		Vector2 look = Vector2.zero;
-		Vector2 move = Vector2.zero;
+		ButtonInputController.FixedTick();
 
-		foreach( IInputManager inputManager in InputManagers )
-		{
-			if(look == Vector2.zero) look = inputManager.GetLookVector();
-			if(move == Vector2.zero) move = inputManager.GetMoveVector();
-		}
-		cameraController.Rotate(look);
+		UpdatePlayer();
+	}
 
+	void LateUpdate ()
+	{
+		ButtonInputController.LateTick();
+	}
+
+	void UpdatePlayer()
+	{
 		PhysicsManager.SetVelocity(
 			MovementController.Move(
-				move,
+				ButtonInputController.MoveVector,
 				Camera.transform,
 				PhysicsManager.GetVelocity()
 				)
 			);
 
-		Player.transform.rotation = MovementController.Rotate(Camera.transform, PhysicsManager.GetVelocity().magnitude);
+		cameraController.Rotate(ButtonInputController.LookVector);
+
+		Player.transform.rotation = MovementController.Rotate(
+			Camera.transform,
+			PhysicsManager.GetVelocity().magnitude
+		);
 	}
-
-
-	void LateUpdate ()
+	public void Jump()
 	{
-		bool jump = false;
-		foreach( IInputManager inputManager in InputManagers )
-		{
-			jump |= inputManager.ButtonIsPressed(Action.Jump);
-		}
-		if(jump)
-		{
-			Debug.Log("Jumping");
-			PhysicsManager.Jump(JumpStrength);
-		}
+		PhysicsManager.Jump(JumpStrength);
 	}
+	public void Climb()
+	{
+		Debug.LogWarning("-- Climb -- Not yet implemented!");
+	}
+
 }
 
 

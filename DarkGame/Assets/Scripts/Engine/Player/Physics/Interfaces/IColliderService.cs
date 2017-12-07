@@ -2,15 +2,16 @@ using UnityEngine;
 
 public interface IColliderService
 {
-    Bounds bounds{get;}
+
+    Bounds GetBounds();
 }
 
 public class UnityColliderService : IColliderService
 {
     Collider collider;
 
-    public Bounds bounds{
-        get{ return collider.bounds;}
+    public Bounds GetBounds(){
+        return collider.bounds;
     }
 
     public UnityColliderService(Collider col)

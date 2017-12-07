@@ -3,17 +3,14 @@ using UnityEngine;
 
 public class InControlInputService : IInputService
 {
-	Vector2 IInputService.LeftStick
+	Vector2 IInputService.GetLeftStick()
 	{
-		get{
-			return InputManager.ActiveDevice.LeftStick.Vector;
-		}
+		return InputManager.ActiveDevice.LeftStick.Vector;
 	}
-	Vector2 IInputService.RightStick
+	Vector2 IInputService.GetRightStick()
 	{
-		get{
-			return InputManager.ActiveDevice.RightStick.Vector;
-		}
+		return InputManager.ActiveDevice.RightStick.Vector;
+
 	}
 	public bool GetControlIsDown(InputControlType action)
 	{

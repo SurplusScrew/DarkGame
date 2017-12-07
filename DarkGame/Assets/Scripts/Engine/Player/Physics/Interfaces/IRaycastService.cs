@@ -19,6 +19,7 @@ public class UnityRaycastService : IRaycastService
     public bool HasHitSomething( Vector3 startPosition, Vector3 Direction, float length )
     {
         RaycastHit hit;
+        Debug.DrawRay(startPosition, Direction * length, Color.red, 10f );
         DoRaycast(out hit, startPosition, Direction, length);
         return hit.collider != null;
     }

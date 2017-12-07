@@ -3,23 +3,19 @@ using UnityEngine;
 
 public class KeyboardInputService : IInputService
 {
-	Vector2 IInputService.LeftStick
+	Vector2 IInputService.GetLeftStick()
 	{
-		get{
-			return new Vector2(
-				KeyboundInput.MoveHorizontal(),
-				KeyboundInput.MoveVertical()
-			);
-		}
+		return new Vector2(
+			KeyboundInput.MoveHorizontal(),
+			KeyboundInput.MoveVertical()
+		);
 	}
-	Vector2 IInputService.RightStick
+	Vector2 IInputService.GetRightStick()
 	{
-		get{
-			return new Vector2(
-				KeyboundInput.LookHorizontal(),
-				KeyboundInput.LookVertical()
-			);
-		}
+		return new Vector2(
+			KeyboundInput.LookHorizontal(),
+			KeyboundInput.LookVertical()
+		);
 	}
 	public bool GetControlIsDown(InputControlType action)
 	{

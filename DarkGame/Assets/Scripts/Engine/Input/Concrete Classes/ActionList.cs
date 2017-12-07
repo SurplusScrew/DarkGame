@@ -1,5 +1,6 @@
 public enum Action
 {
     None,
-    Jump
+    Jump,
+    Climb
 }

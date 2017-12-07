@@ -26,10 +26,10 @@ public abstract class GameplayInputManager : IInputManagerImpl
 
 	public Vector2 GetMoveVector()
 	{
-		return InputService.LeftStick;
+		return InputService.GetLeftStick();
 	}
 	public Vector2 GetLookVector()
 	{
-		return InputService.RightStick;
+		return InputService.GetRightStick();
 	}
 }

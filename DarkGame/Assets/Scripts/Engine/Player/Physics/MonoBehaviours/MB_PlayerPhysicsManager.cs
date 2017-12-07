@@ -10,7 +10,7 @@ public class MB_PlayerPhysicsManager : MonoBehaviour, ICharacterPhysicsManager
 
     private IColliderService Collider;
 
-    private PlayerPhysicsManager physicsManager;
+    private ICharacterPhysicsManagerImpl PhysicsManager;
 
     private IRaycastService Raycast;
 
@@ -24,27 +24,32 @@ public class MB_PlayerPhysicsManager : MonoBehaviour, ICharacterPhysicsManager
         Rigidbody = new UnityRigidbodyService(GetComponentInChildren<Rigidbody>());
         Raycast = new UnityRaycastService();
 
-        physicsManager = new PlayerPhysicsManager(ref Collider, ref Rigidbody,  ref CollisionCheckRange, ref Raycast);
+        PhysicsManager = new PlayerPhysicsManager(
+            ref Collider,
+            ref Rigidbody,
+            ref CollisionCheckRange,
+            ref BottomOffset,
+            ref Raycast);
 
     }
 
-    public void Update()
+    public void FixedUpdate()
     {
         Rigidbody.useGravity = !IsGrounded();
     }
 
     public void Jump( float jumpStrength)
     {
-        physicsManager.Jump(jumpStrength, transform.position);
+        PhysicsManager.Jump(jumpStrength, transform.position);
     }
     public void SetGravityEnabled(bool enabled)
     {
-        physicsManager.SetGravityEnabled(enabled);
+        PhysicsManager.SetGravityEnabled(enabled);
     }
 
     public bool IsGrounded()
     {
-        return physicsManager.IsGrounded(transform.position);
+        return PhysicsManager.IsGrounded(transform.position);
     }
 
     public void SetVelocity(Vector3 velocity)
@@ -55,5 +60,10 @@ public class MB_PlayerPhysicsManager : MonoBehaviour, ICharacterPhysicsManager
     public Vector3 GetVelocity()
     {
         return Rigidbody.velocity;
+    }
+
+    public void OnCollisionEnter(Collision CollisionObject)
+    {
+        PhysicsManager.OnCollision(CollisionObject.gameObject, transform.position);
     }
 }

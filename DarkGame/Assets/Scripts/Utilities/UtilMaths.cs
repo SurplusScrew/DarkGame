@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class UtilMaths
 {
+    #region VectorConversion
     public static Vector2 V3toV2_XZ(Vector3 v)
     {
         return new Vector2(v.x, v.z);
@@ -26,4 +27,17 @@ public class UtilMaths
     {
         return new Vector3(x, v.x, v.y);
     }
+#endregion
+
+#region VectorComparison
+    public static bool Approximately(Vector3 Left, Vector3 Right, float AcceptableInaccuracy = 0.001f)
+    {
+        Vector3 difference = Left - Right;
+
+        return
+            Mathf.Abs(difference.x) < AcceptableInaccuracy &&
+            Mathf.Abs(difference.y) < AcceptableInaccuracy &&
+            Mathf.Abs(difference.z) < AcceptableInaccuracy;
+    }
+    #endregion
 }

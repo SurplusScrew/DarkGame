@@ -22,6 +22,8 @@ public interface ICharacterPhysicsManagerImpl
 
     void SetGravityEnabled(bool enabled);
 
+    void OnCollision(GameObject collidedObject, Vector3 playerPosition);
+
     IRigidbodyService Rigidbody {get;}
     IColliderService Collider {get;}
 }

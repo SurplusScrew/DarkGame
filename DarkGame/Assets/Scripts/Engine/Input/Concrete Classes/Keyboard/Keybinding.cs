@@ -10,6 +10,7 @@ public class Keybinding
     {
         actions = new Dictionary<InControl.InputControlType, KeyCode>();
         actions.Add(InputControlType.Action1, KeyCode.Space);
+        actions.Add(InputControlType.Action2, KeyCode.Return);
     }
     public KeyCode MoveUp
     {
@@ -62,6 +63,8 @@ public class Keybinding
     }
     public KeyCode GetControl(InputControlType action)
     {
-        return actions[action];
+        if(actions.ContainsKey(action))
+            return actions[action];
+        return KeyCode.None;
     }
 }

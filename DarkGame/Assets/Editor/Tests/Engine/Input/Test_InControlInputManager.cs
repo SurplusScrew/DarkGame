@@ -56,16 +56,16 @@ namespace Tests.Input
         public void MoveVectorIsNeeded_GetLeftStick_MoveVectorShouldMatchLeftStickVector()
         {
             Vector2 MoveVector = new Vector2(0,1f);
-            InputService.LeftStick.Returns(MoveVector);
-            Assert.Equals(manager.GetMoveVector(), MoveVector );
+            InputService.GetLeftStick().Returns(MoveVector);
+            Assert.AreEqual(manager.GetMoveVector(), MoveVector );
         }
 
         [Test]
         public void LookVectorIsNeeded_GetRightStick_LookVectorShouldMatchRightStickVector()
         {
             Vector2 LookVector = new Vector2(0,1f);
-            InputService.RightStick.Returns(LookVector);
-            Assert.Equals(manager.GetLookVector(), LookVector );
+            InputService.GetRightStick().Returns(LookVector);
+            Assert.AreEqual(manager.GetLookVector(), LookVector );
         }
     }
 }

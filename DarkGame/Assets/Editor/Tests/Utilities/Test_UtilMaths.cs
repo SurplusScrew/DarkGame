@@ -53,6 +53,36 @@ namespace Tests.Utilities
             {
                 Assert.AreEqual(UtilMaths.V2toV3_YZ(TestVector2), new Vector3(0,1f,2f));
             }
+
+            [Test]
+            public void Approximately_GivenTwoSimilarVectorsWithinAcceptableError_ReturnsTrue()
+            {
+                Assert.IsTrue(UtilMaths.Approximately(new Vector3(0,0,0), new Vector3(0.00001f,0.00001f,0.00001f), 0.01f));
+            }
+
+            [Test]
+            public void Approximately_GivenTwoIdenticalVectors_ReturnsTrue()
+            {
+                Assert.IsTrue(UtilMaths.Approximately(new Vector3(1,1,1), new Vector3(1,1,1), 0.01f));
+            }
+
+            [Test]
+            public void Approximately_GivenTwoDifferentVectorsOutsideAcceptableError_ReturnsFalse()
+            {
+                Assert.IsFalse(UtilMaths.Approximately(new Vector3(0,0,0), new Vector3(0.1f,0.1f,0.1f), 0.01f));
+            }
+
+            [Test]
+            public void Approximately_GivenTwoVectorsWithOneAxisOutsideAcceptableError_ReturnsFalse()
+            {
+                Assert.IsFalse(UtilMaths.Approximately(new Vector3(0,0,0), new Vector3(0.1f,0f,0f), 0.01f));
+            }
+
+            [Test]
+            public void Approximately_GivenTwoVectorsWithTwoAxesOutsideAcceptableError_ReturnsFalse()
+            {
+                Assert.IsFalse(UtilMaths.Approximately(new Vector3(0,0,0), new Vector3(0.1f,0.1f,0f), 0.01f));
+            }
         }
     }
 }
