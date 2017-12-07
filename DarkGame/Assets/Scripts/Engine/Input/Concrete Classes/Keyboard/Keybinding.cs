@@ -9,9 +9,15 @@ public class Keybinding
     public Keybinding()
     {
         actions = new Dictionary<InControl.InputControlType, KeyCode>();
+        BindActions();
+    }
+
+    void BindActions()
+    {
         actions.Add(InputControlType.Action1, KeyCode.Space);
         actions.Add(InputControlType.Action2, KeyCode.Return);
     }
+
     public KeyCode MoveUp
     {
         get{
@@ -64,7 +70,10 @@ public class Keybinding
     public KeyCode GetControl(InputControlType action)
     {
         if(actions.ContainsKey(action))
+        {
             return actions[action];
+        }
+        Debug.LogWarning("No associated keycode found for "+action.ToString());
         return KeyCode.None;
     }
 }
