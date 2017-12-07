@@ -33,6 +33,11 @@ public class InputController
 		}
 	}
 
+	public void FixedTick()
+	{
+		UpdateLookAndMoveVectors();
+	}
+
 	public void UpdateLookAndMoveVectors()
 	{
 		LookVector = Vector2.zero;
@@ -51,23 +56,19 @@ public class InputController
 			}
 		}
 	}
-	public void FixedTick()
-	{
-		UpdateLookAndMoveVectors();
-	}
 
     public void LateTick()
 	{
 		foreach( InputAction action in ActionMap.actions)
 		{
-			if(IsActionRequired(action))
+			if(ActionIsRequired(action))
 			{
 				UseAction(action);
 			}
 		}
 	}
 
-	bool IsActionRequired(InputAction action)
+	bool ActionIsRequired(InputAction action)
 	{
 		bool ActionIsRequired = false;
 		foreach( IInputManager inputManager in InputManagers )
@@ -81,7 +82,7 @@ public class InputController
 	{
 		if(action.ButtonDelegate == null)
 		{
-			Debug.LogError( "Tried to call an action that doesn't have a delegate attached.");
+			throw new System.Exception( "Tried to call an action that doesn't have a delegate attached.");
 		}
 		else
 		{
